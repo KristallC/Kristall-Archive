@@ -67,8 +67,12 @@ async function route() {
                 const res = await fetch(article.file);
                 if (!res.ok) throw new Error();
                 const htmlContent = await res.text();
-                
+    
                 articleHolder.innerHTML = htmlContent;
+    
+                // Сканируем статью на наличие кода и добавляем кнопки копирования
+                highlightAndSetupCode(articleHolder);
+    
                 document.title = `${article.title} | Kristall Archive`;
             } catch (err) {
                 articleHolder.innerHTML = `<h2>⚠️ Ошибка</h2><p>Не удалось получить файл статьи.</p>`;
@@ -99,7 +103,7 @@ function setupCategories() {
             catList.innerHTML = '';
             catTitle.textContent = categoryNames[catKey] || "Статьи";
 
-            if(filtered.length > 0) {
+            if (filtered.length > 0) {
                 filtered.forEach(art => {
                     const item = document.createElement('a');
                     item.href = `#${art.id}`;
@@ -170,6 +174,55 @@ function setupSearch() {
     // Кнопка домой из сайдбара
     document.getElementById('back-to-home').addEventListener('click', () => {
         window.location.hash = 'welcome';
+    });
+}
+
+// Функция автоматического добавления кнопок копирования
+function highlightAndSetupCode(container) {
+    // Находим все теги <pre>, внутри которых есть <code>
+    const preBlocks = container.querySelectorAll('pre');
+
+    preBlocks.forEach(pre => {
+        const code = pre.querySelector('code');
+        if (!code) return;
+
+        // 1. Создаем обертку .code-wrapper вокруг <pre>
+        const wrapper = document.createElement('div');
+        wrapper.className = 'code-wrapper';
+        pre.parentNode.insertBefore(wrapper, pre);
+        wrapper.appendChild(pre);
+
+        // 2. Создаем саму кнопку
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-code-btn';
+        copyBtn.textContent = 'Копировать';
+
+        // 3. Логика копирования при клике
+        copyBtn.addEventListener('click', async () => {
+            const textToCopy = code.innerText;
+            try {
+                // Используем современное API браузера для копирования
+                await navigator.clipboard.writeText(textToCopy);
+                
+                // Визуальный отклик: меняем текст на кнопке
+                copyBtn.textContent = 'Скопировано!';
+                copyBtn.style.background = '#2ecc71'; // Зеленый цвет
+                copyBtn.style.borderColor = '#2ecc71';
+                
+                // Возвращаем как было через 2 секунды
+                setTimeout(() => {
+                    copyBtn.textContent = 'Копировать';
+                    copyBtn.style.background = '';
+                    copyBtn.style.borderColor = '';
+                }, 2000);
+            } catch (err) {
+                copyBtn.textContent = 'Ошибка';
+                console.error('Не удалось скопировать текст: ', err);
+            }
+        });
+
+        // Вставляем кнопку внутрь обертки
+        wrapper.appendChild(copyBtn);
     });
 }
 
