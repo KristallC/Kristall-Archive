@@ -1,1 +1,84 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kristall Archive</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
 
+    <!-- Шапка сайта -->
+    <header class="main-header">
+        <div class="header-left">
+            <a href="#welcome" class="logo">Kristall Archive</a>
+        </div>
+        <nav class="top-nav">
+            <a href="https://kristallc.github.io/Kristall-Community/" target="_blank">На главный сайт</a>
+        </nav>
+    </header>
+
+    <!-- ГЛАВНЫЙ ЭКРАН (Поиск + Разделы) -->
+    <section id="home-screen" class="home-screen">
+        <div class="hero-section">
+            <h1>Чем мы можем помочь?</h1>
+            <p>Ищите инструкции, статьи и гайды по вселенной Kristall</p>
+            
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="Введите ключевое слово или тег..." autocomplete="off">
+                <div id="search-results" class="search-results"></div>
+            </div>
+        </div>
+
+        <!-- Разделы в стиле Реддита -->
+        <div class="categories-container">
+            <h2>Разделы архива</h2>
+            <div class="categories-grid">
+                <div class="category-card" data-cat="info">
+                    <span class="cat-icon">ℹ️</span>
+                    <h3>Информация</h3>
+                    <p>Правила, объявления и важные фиксы</p>
+                </div>
+                <div class="category-card" data-cat="clans">
+                    <span class="cat-icon">🛡️</span>
+                    <h3>Кланы и гильдии</h3>
+                    <p>Всё о создании, прокачке и битвах кланов</p>
+                </div>
+                <div class="category-card" data-cat="guides">
+                    <span class="cat-icon">🎮</span>
+                    <h3>Гайды и туториалы</h3>
+                    <p>Полезные руководства для новичков</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Список статей выбранного раздела -->
+        <div id="category-articles-section" class="category-articles-section hidden">
+            <div class="section-title-row">
+                <h3 id="selected-category-title">Статьи раздела</h3>
+                <button id="close-category-btn" class="text-btn">Сбросить фильтр</button>
+            </div>
+            <div id="category-articles-list" class="articles-grid-list"></div>
+        </div>
+    </section>
+
+    <!-- ВНУТРЕННИЙ ЭКРАН СТАТЬИ (Сайдбар + Контент) -->
+    <div id="content-screen" class="content-screen layout-wrapper hidden">
+        <!-- Боковое меню со списком всех статей -->
+        <aside class="sidebar">
+            <button id="back-to-home" class="back-home-btn">← На главную</button>
+            <div class="sidebar-menu">
+                <div class="sidebar-heading">Все материалы</div>
+                <nav id="sidebar-links" class="sidebar-links"></nav>
+            </div>
+        </aside>
+
+        <!-- Область чтения статьи -->
+        <main class="content-area">
+            <article id="article-holder" class="wiki-article"></article>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
