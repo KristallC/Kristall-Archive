@@ -360,3 +360,63 @@ body {
     border-left-color: #e74c3c;
 }
 .alert-block.danger .alert-icon { color: #e74c3c; }
+
+/* Контейнер для блока кода (нужен для позиционирования кнопки) */
+.code-wrapper {
+    position: relative;
+    margin: 20px 0;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+}
+
+/* Сам блок с кодом */
+.wiki-article pre {
+    background: #0e111f !important;
+    padding: 16px;
+    overflow-x: auto;
+    margin: 0 !important;
+}
+
+.wiki-article code {
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 14px;
+    color: #e1e4ed;
+}
+
+/* Кнопка скопировать */
+.copy-code-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 6px 10px;
+    font-size: 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    opacity: 0; /* Прячем кнопку по умолчанию */
+}
+
+/* Показываем кнопку, когда наводят мышь на блок с кодом */
+.code-wrapper:hover .copy-code-btn {
+    opacity: 1;
+}
+
+.copy-code-btn:hover {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+}
+
+/* Стили для встроенного (однострочного) кода прямо в тексте */
+.wiki-article :not(pre) > code {
+    background: rgba(255, 255, 255, 0.07);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 14px;
+    color: var(--accent-hover);
+}
