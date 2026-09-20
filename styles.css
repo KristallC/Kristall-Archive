@@ -313,3 +313,50 @@ body {
 }
 .wiki-table tr:last-child { border-bottom: none; }
 .wiki-table tbody tr:hover { background: rgba(255,255,255,0.02); }
+
+/* Блоки внимания (Alerts) в статьях */
+.alert-block {
+    padding: 16px 20px;
+    border-radius: 8px;
+    margin: 20px 0;
+    border-left: 4px solid #fff;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+}
+
+.alert-icon {
+    font-size: 20px;
+    line-height: 1;
+}
+
+.alert-content strong {
+    display: block;
+    margin-bottom: 4px;
+    color: #fff;
+}
+
+.alert-content p {
+    margin: 0 !important;
+    font-size: 14px !important;
+    color: #e1e4ed;
+}
+
+/* Цвета для разных типов уведомлений */
+.alert-block.info {
+    background: rgba(52, 152, 219, 0.1);
+    border-left-color: #3498db;
+}
+.alert-block.info .alert-icon { color: #3498db; }
+
+.alert-block.warning {
+    background: rgba(241, 196, 15, 0.1);
+    border-left-color: #f1c40f;
+}
+.alert-block.warning .alert-icon { color: #f1c40f; }
+
+.alert-block.danger {
+    background: rgba(231, 76, 60, 0.1);
+    border-left-color: #e74c3c;
+}
+.alert-block.danger .alert-icon { color: #e74c3c; }
