@@ -2,14 +2,14 @@ let articlesIndex = [];
 
 // Карта понятных названий категорий
 const categoryNames = {
-    info: "ℹ️ Информация и Правила",
-    dev: "💻 Для разработчиков",
-    guides: "🎮 Гайды и туториалы"
+    info: "📌 База знаний и FAQ",
+    dev: "💻 Технический хаб",
+    guides: "🎮 Гайды и туториалы",
+    changelogs: "📜 Обновления проекта"
 };
 
 async function initArchive() {
     try {
-        // Подгружаем наш новый переименованный список статей
         const response = await fetch('articles-list.json');
         articlesIndex = await response.json();
         
@@ -17,39 +17,62 @@ async function initArchive() {
         route();
         setupSearch();
         setupCategories();
-        buildSidebar();
+        buildGroupedSidebar();
     } catch (error) {
         console.error('Ошибка инициализации архива:', error);
     }
 }
 
-// Построение ссылок в боковом меню
-function buildSidebar() {
-    const sidebarLinks = document.getElementById('sidebar-links');
-    sidebarLinks.innerHTML = '';
-    
-    articlesIndex.forEach(article => {
-        const link = document.createElement('a');
-        link.href = `#${article.id}`;
-        link.id = `side-${article.id}`;
-        link.textContent = article.title;
-        sidebarLinks.appendChild(link);
-    });
+// Умное построение сайдбара: группируем статьи по их разделам
+function buildGroupedSidebar() {
+    const sidebarLinksContainer = document.getElementById('sidebar-links');
+    sidebarLinksContainer.innerHTML = '';
+
+    // Создаем блоки под каждую категорию, которая есть в манифесте
+    for (const [catKey, catName] of Object.entries(categoryNames)) {
+        const catArticles = articlesIndex.filter(a => a.category === catKey);
+        
+        // Если в категории есть статьи, выводим её группу
+        if (catArticles.length > 0) {
+            const groupDiv = document.createElement('div');
+            groupDiv.className = 'sidebar-group';
+            
+            const groupTitle = document.createElement('div');
+            groupTitle.className = 'sidebar-group-title';
+            groupTitle.textContent = catName;
+            groupDiv.appendChild(groupTitle);
+
+            catArticles.forEach(article => {
+                const link = document.createElement('a');
+                link.href = `#${article.id}`;
+                link.id = `side-${article.id}`;
+                link.textContent = article.title;
+                link.title = article.title; // Подсказка при наведении
+                groupDiv.appendChild(link);
+            });
+
+            sidebarLinksContainer.appendChild(groupDiv);
+        }
+    }
 }
 
-// Роутер страниц
+// Роутер страниц с поддержкой анимаций
 async function route() {
     const hash = window.location.hash.replace('#', '');
     const homeScreen = document.getElementById('home-screen');
     const contentScreen = document.getElementById('content-screen');
     const articleHolder = document.getElementById('article-holder');
 
-    // Снимаем класс active со всех ссылок в сайдбаре
     document.querySelectorAll('.sidebar-links a').forEach(a => a.classList.remove('active'));
 
     if (!hash || hash === 'welcome') {
         homeScreen.classList.remove('hidden');
         contentScreen.classList.add('hidden');
+        // Добавляем плавное появление главному экрану
+        homeScreen.classList.remove('fade-in');
+        void homeScreen.offsetWidth; // Трюк для перезапуска CSS-анимации
+        homeScreen.classList.add('fade-in');
+        
         document.title = "Kristall Archive";
     } else {
         const article = articlesIndex.find(a => a.id === hash);
@@ -59,7 +82,6 @@ async function route() {
             contentScreen.classList.remove('hidden');
             articleHolder.innerHTML = '<p>Загрузка контента...</p>';
             
-            // Подсвечиваем текущую статью в сайдбаре
             const activeLink = document.getElementById(`side-${article.id}`);
             if (activeLink) activeLink.classList.add('active');
 
@@ -68,11 +90,13 @@ async function route() {
                 if (!res.ok) throw new Error();
                 const htmlContent = await res.text();
     
+                // Вставляем контент и запускаем анимацию проявления
                 articleHolder.innerHTML = htmlContent;
+                articleHolder.classList.remove('fade-in');
+                void articleHolder.offsetWidth; // Перезапуск анимации текста
+                articleHolder.classList.add('fade-in');
     
-                // Сканируем статью на наличие кода и добавляем кнопки копирования
                 highlightAndSetupCode(articleHolder);
-    
                 document.title = `${article.title} | Kristall Archive`;
             } catch (err) {
                 articleHolder.innerHTML = `<h2>⚠️ Ошибка</h2><p>Не удалось получить файл статьи.</p>`;
@@ -85,7 +109,7 @@ async function route() {
     }
 }
 
-// Логика работы категорий в стиле Reddit
+// Логика разделов Реддита
 function setupCategories() {
     const cards = document.querySelectorAll('.category-card');
     const catSection = document.getElementById('category-articles-section');
@@ -96,8 +120,6 @@ function setupCategories() {
     cards.forEach(card => {
         card.addEventListener('click', () => {
             const catKey = card.getAttribute('data-cat');
-            
-            // Фильтруем статьи
             const filtered = articlesIndex.filter(a => a.category === catKey);
             
             catList.innerHTML = '';
@@ -119,7 +141,10 @@ function setupCategories() {
             }
 
             catSection.classList.remove('hidden');
-            // Плавно прокручиваем к списку статей
+            catSection.classList.remove('fade-in');
+            void catSection.offsetWidth;
+            catSection.classList.add('fade-in');
+            
             catSection.scrollIntoView({ behavior: 'smooth' });
         });
     });
@@ -129,7 +154,7 @@ function setupCategories() {
     });
 }
 
-// Логика поиска
+// Логика живого поиска
 function setupSearch() {
     const searchInput = document.getElementById('search-input');
     const searchResults = document.getElementById('search-results');
@@ -171,45 +196,37 @@ function setupSearch() {
         }
     });
 
-    // Кнопка домой из сайдбара
     document.getElementById('back-to-home').addEventListener('click', () => {
         window.location.hash = 'welcome';
     });
 }
 
-// Функция автоматического добавления кнопок копирования
+// Функция добавления кнопок копирования кода
 function highlightAndSetupCode(container) {
-    // Находим все теги <pre>, внутри которых есть <code>
     const preBlocks = container.querySelectorAll('pre');
 
     preBlocks.forEach(pre => {
         const code = pre.querySelector('code');
         if (!code) return;
+        if (pre.parentNode.className === 'code-wrapper') return; // Защита от дублирования
 
-        // 1. Создаем обертку .code-wrapper вокруг <pre>
         const wrapper = document.createElement('div');
         wrapper.className = 'code-wrapper';
         pre.parentNode.insertBefore(wrapper, pre);
         wrapper.appendChild(pre);
 
-        // 2. Создаем саму кнопку
         const copyBtn = document.createElement('button');
         copyBtn.className = 'copy-code-btn';
         copyBtn.textContent = 'Копировать';
 
-        // 3. Логика копирования при клике
         copyBtn.addEventListener('click', async () => {
             const textToCopy = code.innerText;
             try {
-                // Используем современное API браузера для копирования
                 await navigator.clipboard.writeText(textToCopy);
-                
-                // Визуальный отклик: меняем текст на кнопке
                 copyBtn.textContent = 'Скопировано!';
-                copyBtn.style.background = '#2ecc71'; // Зеленый цвет
+                copyBtn.style.background = '#2ecc71';
                 copyBtn.style.borderColor = '#2ecc71';
                 
-                // Возвращаем как было через 2 секунды
                 setTimeout(() => {
                     copyBtn.textContent = 'Копировать';
                     copyBtn.style.background = '';
@@ -217,11 +234,9 @@ function highlightAndSetupCode(container) {
                 }, 2000);
             } catch (err) {
                 copyBtn.textContent = 'Ошибка';
-                console.error('Не удалось скопировать текст: ', err);
             }
         });
 
-        // Вставляем кнопку внутрь обертки
         wrapper.appendChild(copyBtn);
     });
 }
