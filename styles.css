@@ -74,6 +74,7 @@ body {
     font-size: 42px;
     margin-bottom: 12px;
     background: linear-gradient(45deg, #fff, var(--accent-hover));
+    background-clip: text; /* Добавили стандартное свойство */
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -312,4 +313,3 @@ body {
 }
 .wiki-table tr:last-child { border-bottom: none; }
 .wiki-table tbody tr:hover { background: rgba(255,255,255,0.02); }
-
