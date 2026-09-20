@@ -3,7 +3,7 @@ let articlesIndex = [];
 // Карта понятных названий категорий
 const categoryNames = {
     info: "ℹ️ Информация и Правила",
-    clans: "🛡️ Кланы и гильдии",
+    dev: "💻 Для разработчиков",
     guides: "🎮 Гайды и туториалы"
 };
 
@@ -50,7 +50,7 @@ async function route() {
     if (!hash || hash === 'welcome') {
         homeScreen.classList.remove('hidden');
         contentScreen.classList.add('hidden');
-        document.title = "Kristall Archive | База знаний";
+        document.title = "Kristall Archive";
     } else {
         const article = articlesIndex.find(a => a.id === hash);
         
