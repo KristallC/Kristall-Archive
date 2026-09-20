@@ -1,10 +1,10 @@
 [
   {
-    "id": "server-rules",
+    "id": "rules",
     "title": "Общие правила сообщества Kristall",
     "description": "Свод правил поведения, регламент наказаний для модераторов и принципы безопасности аккаунтов.",
     "category": "info",
     "tags": ["правила", "важно", "модерация", "faq", "законы"],
-    "file": "articles/server-rules.html"
+    "file": "articles/rules.html"
   }
 ]
