@@ -15,6 +15,8 @@
     <!-- Шапка сайта -->
     <header class="main-header">
         <div class="header-left">
+            <!-- Кнопка меню, которая будет видна ТОЛЬКО на телефонах внутри статьи -->
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle hidden">☰ Меню</button>
             <a href="#welcome" class="logo">Kristall Archive</a>
         </div>
         <nav class="top-nav">
@@ -26,7 +28,7 @@
     <section id="home-screen" class="home-screen">
         <div class="hero-section">
             <h1>Чем мы можем помочь?</h1>
-            <p>Ищите инструкции, статьи и гайды по вселенной Kristall</p>
+            <p>Ищите инструкции, статьи и гайды во вселенной Kristall</p>
             
             <div class="search-box">
                 <input type="text" id="search-input" placeholder="Введите ключевое слово или тег..." autocomplete="off">
@@ -70,12 +72,15 @@
     </section>
 
     <!-- ВНУТРЕННИЙ ЭКРАН СТАТЬИ (Сайдбар + Контент) -->
-    <div id="content-screen" class="content-screen layout-wrapper hidden">
-        <!-- Боковое меню со списком всех статей -->
-        <aside class="sidebar">
-            <button id="back-to-home" class="back-home-btn">На главную</button>
+    <div id="content-screen" class="content-screen hidden">
+        <!-- Боковое меню (Сайдбар) -->
+        <aside id="sidebar" class="sidebar">
+            <div class="sidebar-header">
+                <button id="back-to-home" class="back-home-btn">На главную</button>
+                <!-- Кнопка закрытия сайдбара на телефонах -->
+                <button id="sidebar-close" class="sidebar-close-btn">✕</button>
+            </div>
             <div class="sidebar-menu">
-                <div class="sidebar-heading">Все материалы</div>
                 <nav id="sidebar-links" class="sidebar-links"></nav>
             </div>
         </aside>
@@ -85,6 +90,9 @@
             <article id="article-holder" class="wiki-article"></article>
         </main>
     </div>
+
+    <!-- Затемнение фона при открытом мобильном меню -->
+    <div id="sidebar-overlay" class="sidebar-overlay hidden"></div>
 
     <script src="app.js"></script>
 </body>
