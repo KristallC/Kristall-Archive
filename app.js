@@ -18,8 +18,14 @@ async function initArchive() {
         setupCategories();
         buildGroupedSidebar();
         setupMobileMenu();
-
         initTheme();
+        
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(err => {
+                console.error('Ошибка PWA:', err);
+            });
+        }
+
     } catch (error) {
         console.error('Ошибка инициализации архива:', error);
     }
