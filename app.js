@@ -1,9 +1,8 @@
 let articlesIndex = [];
 
-// Карта понятных названий категорий
 const categoryNames = {
     info: "📌 База знаний и FAQ",
-    dev: "💻 Технический хаб",
+    dev: "💻 Технический раздел",
     guides: "🎮 Гайды и туториалы",
     changelogs: "📜 Обновления проекта"
 };
@@ -18,21 +17,20 @@ async function initArchive() {
         setupSearch();
         setupCategories();
         buildGroupedSidebar();
+        setupMobileMenu(); // Подключаем управление мобильной шторкой
     } catch (error) {
         console.error('Ошибка инициализации архива:', error);
     }
 }
 
-// Умное построение сайдбара: группируем статьи по их разделам
+// Построение сгруппированного сайдбара
 function buildGroupedSidebar() {
     const sidebarLinksContainer = document.getElementById('sidebar-links');
     sidebarLinksContainer.innerHTML = '';
 
-    // Создаем блоки под каждую категорию, которая есть в манифесте
     for (const [catKey, catName] of Object.entries(categoryNames)) {
         const catArticles = articlesIndex.filter(a => a.category === catKey);
         
-        // Если в категории есть статьи, выводим её группу
         if (catArticles.length > 0) {
             const groupDiv = document.createElement('div');
             groupDiv.className = 'sidebar-group';
@@ -47,7 +45,11 @@ function buildGroupedSidebar() {
                 link.href = `#${article.id}`;
                 link.id = `side-${article.id}`;
                 link.textContent = article.title;
-                link.title = article.title; // Подсказка при наведении
+                link.title = article.title;
+                
+                // При клике на ссылку на мобилке — закрываем шторку
+                link.addEventListener('click', closeMobileMenu);
+                
                 groupDiv.appendChild(link);
             });
 
@@ -56,21 +58,23 @@ function buildGroupedSidebar() {
     }
 }
 
-// Роутер страниц с поддержкой анимаций
+// Роутер страниц с контролем мобильных кнопок
 async function route() {
     const hash = window.location.hash.replace('#', '');
     const homeScreen = document.getElementById('home-screen');
     const contentScreen = document.getElementById('content-screen');
     const articleHolder = document.getElementById('article-holder');
+    const menuToggleBtn = document.getElementById('mobile-menu-toggle');
 
     document.querySelectorAll('.sidebar-links a').forEach(a => a.classList.remove('active'));
 
     if (!hash || hash === 'welcome') {
         homeScreen.classList.remove('hidden');
         contentScreen.classList.add('hidden');
-        // Добавляем плавное появление главному экрану
+        menuToggleBtn.classList.add('hidden'); // Прячем кнопку меню на главном экране
+        
         homeScreen.classList.remove('fade-in');
-        void homeScreen.offsetWidth; // Трюк для перезапуска CSS-анимации
+        void homeScreen.offsetWidth; 
         homeScreen.classList.add('fade-in');
         
         document.title = "Kristall Archive";
@@ -80,6 +84,8 @@ async function route() {
         if (article) {
             homeScreen.classList.add('hidden');
             contentScreen.classList.remove('hidden');
+            menuToggleBtn.classList.remove('hidden'); // Показываем кнопку меню внутри статьи
+            
             articleHolder.innerHTML = '<p>Загрузка контента...</p>';
             
             const activeLink = document.getElementById(`side-${article.id}`);
@@ -90,10 +96,9 @@ async function route() {
                 if (!res.ok) throw new Error();
                 const htmlContent = await res.text();
     
-                // Вставляем контент и запускаем анимацию проявления
                 articleHolder.innerHTML = htmlContent;
                 articleHolder.classList.remove('fade-in');
-                void articleHolder.offsetWidth; // Перезапуск анимации текста
+                void articleHolder.offsetWidth; 
                 articleHolder.classList.add('fade-in');
     
                 highlightAndSetupCode(articleHolder);
@@ -104,8 +109,36 @@ async function route() {
         } else {
             homeScreen.classList.add('hidden');
             contentScreen.classList.remove('hidden');
+            menuToggleBtn.classList.add('hidden');
             articleHolder.innerHTML = `<h2>404</h2><p>Такой статьи не существует.</p>`;
         }
+    }
+}
+
+// Управление шторкой мобильного меню
+function setupMobileMenu() {
+    const menuToggle = document.getElementById('mobile-menu-toggle');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarClose = document.getElementById('sidebar-close');
+    const overlay = document.getElementById('sidebar-overlay');
+
+    // Открыть меню
+    menuToggle.addEventListener('click', () => {
+        sidebar.classList.add('open');
+        overlay.classList.remove('hidden');
+    });
+
+    // Закрыть меню по крестику или клику на темный фон
+    sidebarClose.addEventListener('click', closeMobileMenu);
+    overlay.addEventListener('click', closeMobileMenu);
+}
+
+function closeMobileMenu() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    if (sidebar && overlay) {
+        sidebar.classList.remove('open');
+        overlay.classList.add('hidden');
     }
 }
 
@@ -198,17 +231,18 @@ function setupSearch() {
 
     document.getElementById('back-to-home').addEventListener('click', () => {
         window.location.hash = 'welcome';
+        closeMobileMenu(); // Закрываем меню, если ушли на главную
     });
 }
 
-// Функция добавления кнопок копирования кода
+// Добавление кнопок копирования кода
 function highlightAndSetupCode(container) {
     const preBlocks = container.querySelectorAll('pre');
 
     preBlocks.forEach(pre => {
         const code = pre.querySelector('code');
         if (!code) return;
-        if (pre.parentNode.className === 'code-wrapper') return; // Защита от дублирования
+        if (pre.parentNode.className === 'code-wrapper') return; 
 
         const wrapper = document.createElement('div');
         wrapper.className = 'code-wrapper';
