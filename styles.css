@@ -394,3 +394,18 @@ html, body {
     border-color: #2ecc71 !important;
     color: #fff !important;
 }
+
+/* Красивые интерактивные ссылки внутри статей */
+.wiki-article .wiki-link {
+    color: var(--accent); /* Использует наш фирменный цвет (фиолетовый в темной теме) */
+    text-decoration: none; /* Прячем стандартное некрасивое подчеркивание */
+    font-weight: 600; /* Делаем текст ссылки чуть жирнее, чтобы выделить в тексте */
+    border-bottom: 1px dashed rgba(121, 82, 235, 0.4); /* Делаем аккуратное пунктирное подчеркивание снизу */
+    transition: all 0.2s ease;
+}
+
+.wiki-article .wiki-link:hover {
+    color: var(--accent-hover); /* При наведении цвет становится ярче */
+    border-bottom-style: solid; /* Пунктир превращается в сплошную линию */
+    border-bottom-color: var(--accent-hover);
+}
