@@ -6,5 +6,13 @@
     "category": "info",
     "tags": ["правила", "важно", "модерация", "faq", "законы"],
     "file": "articles/rules.html"
+  },
+  {
+    "id": "faq",
+    "title": "Часто задаваемые вопросы (FAQ)",
+    "description": "Быстрые ответы на популярные вопросы.",
+    "category": "info",
+    "tags": ["faq", "помощь", "вопросы", "новичкам"],
+    "file": "articles/faq.html"
   }
 ]
