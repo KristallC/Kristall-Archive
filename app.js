@@ -17,7 +17,9 @@ async function initArchive() {
         setupSearch();
         setupCategories();
         buildGroupedSidebar();
-        setupMobileMenu(); // Подключаем управление мобильной шторкой
+        setupMobileMenu();
+
+        initTheme();
     } catch (error) {
         console.error('Ошибка инициализации архива:', error);
     }
@@ -272,6 +274,38 @@ function highlightAndSetupCode(container) {
         });
 
         wrapper.appendChild(copyBtn);
+    });
+}
+
+// Логика переключения темной и светлой темы
+function initTheme() {
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    if (!themeToggleBtn) return;
+
+    // 1. Проверяем, какая тема была сохранена ранее
+    const savedTheme = localStorage.getItem('kristall-theme');
+
+    // Если сохранена светлая тема — включаем её сразу
+    if (savedTheme === 'light') {
+        document.body.classList.add('light-theme');
+        themeToggleBtn.textContent = '☀️'; // Меняем иконку на Солнце
+    } else {
+        themeToggleBtn.textContent = '🌙'; // Иначе оставляем Луну (темная тема по умолчанию)
+    }
+
+    // 2. Слушаем клик по кнопке переключения
+    themeToggleBtn.addEventListener('click', () => {
+        // Переключаем класс на теге body
+        document.body.classList.toggle('light-theme');
+
+        // Проверяем, включилась ли в итоге светлая тема
+        if (document.body.classList.contains('light-theme')) {
+            themeToggleBtn.textContent = '☀️';
+            localStorage.setItem('kristall-theme', 'light'); // Запоминаем выбор
+        } else {
+            themeToggleBtn.textContent = '🌙';
+            localStorage.setItem('kristall-theme', 'dark');  // Запоминаем выбор
+        }
     });
 }
 
