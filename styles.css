@@ -1,6 +1,7 @@
 :root {
     --bg-main: #0b0d19;
     --bg-card: rgba(20, 24, 46, 0.6);
+    --bg-inner-card: #14182e;            /* Цвет карточек статей внутри разделов */
     --bg-sidebar: #111424;
     --accent: #7952eb;
     --accent-hover: #9674f2;
@@ -11,20 +12,42 @@
     --font: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
+/* ==========================================================================
+   ИСПРАВЛЕННАЯ СВЕТЛАЯ ТЕМА (Полностью на адаптивных переменных)
+   ========================================================================== */
+body.light-theme {
+    --bg-main: #f4f6fa;                  /* Светлый фон для всей страницы */
+    --bg-card: rgba(255, 255, 255, 0.8); /* Белые карточки разделов */
+    --bg-inner-card: #ffffff;            /* Чисто белые карточки статей */
+    --bg-sidebar: #ffffff;               /* Белый сайдбар */
+    --accent: #633ec9;                   /* Контрастный фиолетовый */
+    --accent-hover: #4e2fa3;
+    --text-main: #1e2238;                /* Темный текст для чтения */
+    --text-muted: #5c6484;               /* Читаемый серый текст */
+    --border: rgba(0, 0, 0, 0.1);        /* Темные аккуратные границы */
+}
+
+/* Фикс для блоков кода в светлой теме (оставляем их темными, как в VS Code) */
+body.light-theme .wiki-article pre {
+    background: #1e2238 !important;
+}
+
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
 
-/* Лечим баг с зумом и ломающейся шириной раз и навсегда */
+/* html и body теперь жестко привязаны к адаптивному фону, убирая черный низ */
 html, body {
     background-color: var(--bg-main);
     color: var(--text-main);
     font-family: var(--font);
     line-height: 1.6;
     max-width: 100%;
+    min-height: 100vh;
     overflow-x: hidden;
+    transition: background-color 0.3s ease, color 0.3s ease; /* Плавное переключение */
 }
 
 .hidden { display: none !important; }
@@ -35,7 +58,7 @@ html, body {
     justify-content: space-between;
     align-items: center;
     padding: 16px 40px;
-    background: rgba(11, 13, 25, 0.8);
+    background: var(--bg-sidebar); /* Теперь шапка тоже адаптируется под тему */
     backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border);
     position: sticky;
@@ -49,7 +72,6 @@ html, body {
     gap: 16px;
 }
 
-/* Мобильная кнопка меню */
 .mobile-menu-toggle {
     background: var(--accent);
     color: #fff;
@@ -59,9 +81,7 @@ html, body {
     font-weight: 600;
     font-size: 14px;
     cursor: pointer;
-    transition: background 0.2s;
 }
-.mobile-menu-toggle:hover { background: var(--accent-hover); }
 
 .logo {
     font-size: 20px;
@@ -71,11 +91,17 @@ html, body {
     letter-spacing: 0.5px;
 }
 
+.top-nav {
+    display: flex;
+    align-items: center;
+}
+
 .top-nav a {
     color: var(--text-muted);
     text-decoration: none;
     font-weight: 500;
 }
+.top-nav a:hover { color: var(--accent-hover); }
 
 /* Главный экран */
 .home-screen {
@@ -92,7 +118,7 @@ html, body {
 .hero-section h1 {
     font-size: 42px;
     margin-bottom: 12px;
-    background: linear-gradient(45deg, #fff, var(--accent-hover));
+    background: linear-gradient(45deg, var(--text-main), var(--accent-hover));
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -108,35 +134,35 @@ html, body {
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: 30px;
-    color: #fff;
+    color: var(--text-main);
     font-size: 16px;
     transition: all 0.3s;
 }
 .search-box input:focus {
     outline: none;
     border-color: var(--accent);
-    box-shadow: 0 0 15px rgba(121, 82, 235, 0.3);
+    box-shadow: 0 0 15px rgba(121, 82, 235, 0.2);
 }
 
 .search-results {
     position: absolute;
     top: 110%; left: 0; right: 0;
-    background: #14182e;
+    background: var(--bg-inner-card);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     max-height: 300px;
     overflow-y: auto;
     z-index: 10;
     display: none;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
 }
 .search-item { display: block; padding: 12px 20px; color: var(--text-main); text-decoration: none; border-bottom: 1px solid var(--border); }
-.search-item:hover { background: rgba(255,255,255,0.05); }
+.search-item:hover { background: rgba(121, 82, 235, 0.08); }
 .search-item-title { font-weight: 600; color: var(--accent-hover); }
 .search-item-desc { font-size: 13px; color: var(--text-muted); }
 
-/* Разделы */
-.categories-container h2 { font-size: 24px; margin-bottom: 20px; }
+/* Разделы архива */
+.categories-container h2 { font-size: 24px; margin-bottom: 20px; color: var(--text-main); }
 .categories-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -154,37 +180,55 @@ html, body {
 .category-card:hover {
     transform: translateY(-4px);
     border-color: var(--accent);
-    background: rgba(121, 82, 235, 0.1);
+    background: rgba(121, 82, 235, 0.08);
 }
 .cat-icon { font-size: 32px; display: block; margin-bottom: 12px; }
-.category-card h3 { margin-bottom: 8px; font-size: 18px; }
+.category-card h3 { margin-bottom: 8px; font-size: 18px; color: var(--text-main); }
 .category-card p { color: var(--text-muted); font-size: 14px; }
 
-/* Список статей выбранного раздела */
+/* Список статей выбранного раздела (Фикс невидимки!) */
 .category-articles-section {
-    background: rgba(20, 24, 46, 0.3);
+    background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     padding: 24px;
+    margin-top: 30px;
 }
 .section-title-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.text-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; font-weight: 500; }
-.text-btn:hover { color: #fff; }
-.articles-grid-list { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.article-preview-card { background: #14182e; border: 1px solid var(--border); padding: 16px; border-radius: 8px; text-decoration: none; color: var(--text-main); }
-.article-preview-card:hover { border-color: var(--accent-hover); }
-.article-preview-card h4 { color: var(--accent-hover); margin-bottom: 6px; }
-.article-preview-card p { font-size: 13px; color: var(--text-muted); }
+.section-title-row h3 { color: var(--text-main); }
+.text-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; font-weight: 500; font-size: 14px; }
+.text-btn:hover { color: var(--accent-hover); }
 
-/* ЭКРАН ЧТЕНИЯ СТАТЬИ (Идеальный раздельный скролл и отступы) */
+.articles-grid-list { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.article-preview-card { 
+    background: var(--bg-inner-card); /* Используем адаптивную переменную цвета фона */
+    border: 1px solid var(--border); 
+    padding: 18px; 
+    border-radius: 8px; 
+    text-decoration: none; 
+    color: var(--text-main); /* Переменная цвета текста */
+    transition: border-color 0.2s, transform 0.2s;
+}
+.article-preview-card:hover { 
+    border-color: var(--accent-hover); 
+    transform: scale(1.01);
+}
+.article-preview-card h4 { color: var(--accent); margin-bottom: 6px; font-size: 16px; font-weight: 600; }
+.article-preview-card p { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+.no-results { padding: 15px; text-align: center; color: var(--text-muted); }
+
+/* ==========================================================================
+   ЭКРАН ЧТЕНИЯ СТАТЬИ (Идеальный раздельный скролл и отступы)
+   ========================================================================== */
 .content-screen {
     display: grid;
     grid-template-columns: 300px 1fr;
     height: calc(100vh - 69px);
     overflow: hidden;
+    background-color: var(--bg-main);
 }
 
-/* Сайдбар для ПК-версии */
+/* Сайдбар */
 .sidebar {
     background: var(--bg-sidebar);
     border-right: 1px solid var(--border);
@@ -204,7 +248,7 @@ html, body {
 .back-home-btn {
     flex-grow: 1;
     padding: 10px;
-    background: rgba(255,255,255,0.04);
+    background: rgba(121, 82, 235, 0.05);
     border: 1px solid var(--border);
     color: var(--text-main);
     border-radius: 6px;
@@ -212,8 +256,7 @@ html, body {
     font-weight: 600;
     transition: background 0.2s;
 }
-.back-home-btn:hover { background: rgba(255,255,255,0.1); }
-
+.back-home-btn:hover { background: var(--accent); color: #fff; }
 .sidebar-close-btn { display: none; }
 
 .sidebar-group { margin-bottom: 20px; }
@@ -222,7 +265,7 @@ html, body {
     display: block; color: var(--text-muted); text-decoration: none; padding: 8px 12px; border-radius: 6px; margin-bottom: 2px; font-size: 14px; transition: all 0.2s;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.sidebar-links a:hover { color: #fff; background: rgba(255, 255, 255, 0.03); }
+.sidebar-links a:hover { color: var(--text-main); background: rgba(121, 82, 235, 0.08); }
 .sidebar-links a.active { color: #fff; background: var(--accent); font-weight: 600; }
 
 /* Область чтения статьи */
@@ -233,11 +276,30 @@ html, body {
 }
 
 .wiki-article { max-width: 800px; margin: 0 auto; }
-.wiki-article h1 { font-size: 36px; margin-bottom: 20px; color: #fff; }
-.wiki-article h2 { font-size: 24px; margin-top: 36px; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 6px; color: #fff; }
-.wiki-article p { margin-bottom: 18px; color: #e1e4ed; font-size: 16px; text-align: justify; }
-.wiki-article ul, .wiki-article ol { margin-bottom: 20px; padding-left: 20px; color: #e1e4ed; }
+.wiki-article h1 { font-size: 36px; margin-bottom: 20px; color: var(--text-main); }
+.wiki-article h2 { font-size: 24px; margin-top: 36px; margin-bottom: 16px; border-bottom: 1px solid var(--border); padding-bottom: 6px; color: var(--text-main); }
+.wiki-article p { margin-bottom: 18px; color: var(--text-main); font-size: 16px; text-align: justify; opacity: 0.95; }
+.wiki-article ul, .wiki-article ol { margin-bottom: 20px; padding-left: 20px; color: var(--text-main); }
 .wiki-article li { margin-bottom: 6px; }
+
+/* Кнопка переключения темы (Кастомизация) */
+.theme-toggle-btn {
+    background: rgba(121, 82, 235, 0.1);
+    border: 1px solid var(--border);
+    color: var(--text-main);
+    font-size: 16px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    margin-left: 16px;
+    transition: all 0.2s ease;
+    line-height: 1;
+}
+.theme-toggle-btn:hover {
+    transform: scale(1.1);
+    background: var(--accent);
+    color: #fff;
+}
 
 /* Защита таблиц и блоков кода от вылезания */
 .wiki-table-container {
@@ -248,28 +310,28 @@ html, body {
     border: 1px solid var(--border);
 }
 .wiki-table { width: 100%; border-collapse: collapse; background: var(--bg-card); min-width: 500px; }
-.wiki-table th, .wiki-table td { padding: 14px 18px; text-align: left; }
-.wiki-table th { background: rgba(121, 82, 235, 0.2); color: #fff; font-weight: 600; }
+.wiki-table th, .wiki-table td { padding: 14px 18px; text-align: left; color: var(--text-main); }
+.wiki-table th { background: rgba(121, 82, 235, 0.15); font-weight: 600; }
 .wiki-table tr { border-bottom: 1px solid var(--border); }
 .wiki-table tr:last-child { border-bottom: none; }
-.wiki-table tbody tr:hover { background: rgba(255,255,255,0.02); }
+.wiki-table tbody tr:hover { background: rgba(121, 82, 235, 0.04); }
 
 .code-wrapper { position: relative; margin: 24px 0; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); width: 100%; }
 .wiki-article pre { background: #0e111f !important; padding: 16px; overflow-x: auto; margin: 0 !important; width: 100%; }
 .wiki-article code { font-family: 'Consolas', monospace; font-size: 14px; color: #e1e4ed; }
-.copy-code-btn { position: absolute; top: 8px; right: 8px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border); color: var(--text-muted); padding: 6px 10px; font-size: 12px; border-radius: 4px; cursor: pointer; opacity: 0; transition: all 0.2s; }
+.copy-code-btn { position: absolute; top: 8px; right: 8px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border); color: #8a92b2; padding: 6px 10px; font-size: 12px; border-radius: 4px; cursor: pointer; opacity: 0; transition: all 0.2s; }
 .code-wrapper:hover .copy-code-btn { opacity: 1; }
 .copy-code-btn:hover { background: var(--accent); color: #fff; }
-.wiki-article :not(pre) > code { background: rgba(255, 255, 255, 0.07); padding: 2px 6px; border-radius: 4px; font-size: 14px; color: var(--accent-hover); }
+.wiki-article :not(pre) > code { background: rgba(121, 82, 235, 0.1); padding: 2px 6px; border-radius: 4px; font-size: 14px; color: var(--accent); font-family: monospace; }
 
 /* Блоки уведомлений */
-.alert-block { padding: 16px 20px; border-radius: 8px; margin: 24px 0; border-left: 4px solid #fff; display: flex; gap: 14px; }
+.alert-block { padding: 16px 20px; border-radius: 8px; margin: 24px 0; border-left: 4px solid #fff; display: flex; gap: 14px; color: var(--text-main); }
 .alert-icon { font-size: 20px; line-height: 1; }
-.alert-content strong { display: block; margin-bottom: 4px; color: #fff; }
-.alert-content p { margin: 0 !important; font-size: 14px !important; }
-.alert-block.info { background: rgba(52, 152, 219, 0.1); border-left-color: #3498db; }
+.alert-content strong { display: block; margin-bottom: 4px; color: var(--text-main); }
+.alert-content p { margin: 0 !important; font-size: 14px !important; color: var(--text-muted); }
+.alert-block.info { background: rgba(52, 152, 219, 0.08); border-left-color: #3498db; }
 .alert-block.info .alert-icon { color: #3498db; }
-.alert-block.warning { background: rgba(241, 196, 15, 0.1); border-left-color: #f1c40f; }
+.alert-block.warning { background: rgba(241, 196, 15, 0.08); border-left-color: #f1c40f; }
 .alert-block.warning .alert-icon { color: #f1c40f; }
 
 /* Анимации */
@@ -277,7 +339,7 @@ html, body {
 @keyframes fadeInSlide { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
 /* Затемняющий оверлей для мобильного меню */
-.sidebar-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px); z-index: 998; }
+.sidebar-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(4px); z-index: 998; }
 
 /* МОБИЛЬНАЯ АДАПТАЦИЯ */
 @media (max-width: 900px) {
@@ -290,7 +352,7 @@ html, body {
         top: 0; left: 0; bottom: 0;
         width: 280px;
         z-index: 999;
-        box-shadow: 10px 0 30px rgba(0,0,0,0.6);
+        box-shadow: 10px 0 30px rgba(0,0,0,0.3);
         transform: translateX(-100%);
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
