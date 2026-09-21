@@ -122,6 +122,8 @@ async function route() {
                 articleHolder.classList.add('fade-in');
     
                 highlightAndSetupCode(articleHolder);
+
+                setupShareButton(articleHolder);
                 
                 // МЕНЯЕМ ЗАГОЛОВОК СТРАНИЦЫ
                 document.title = `${article.title} | Kristall Archive`;
@@ -336,6 +338,44 @@ function initTheme() {
         } else {
             themeToggleBtn.textContent = '🌙';
             localStorage.setItem('kristall-theme', 'dark');  // Запоминаем выбор
+        }
+    });
+}
+
+// Функция автоматического создания кнопки "Поделиться"
+function setupShareButton(container) {
+    // Находим первый заголовок h1 в статье (это название статьи)
+    const mainTitle = container.querySelector('h1');
+    if (!mainTitle) return;
+
+    // Создаем элемент кнопки
+    const shareBtn = document.createElement('button');
+    shareBtn.className = 'share-article-btn';
+    shareBtn.innerHTML = '🔗 Поделиться статьёй';
+
+    // Вставляем кнопку сразу ПОСЛЕ главного заголовка h1
+    mainTitle.parentNode.insertBefore(shareBtn, mainTitle.nextSibling);
+
+    // Логика копирования ссылки при клике
+    shareBtn.addEventListener('click', async () => {
+        // Формируем чистую ссылку: текущий адрес сайта + хэш статьи (например, ://mysite.com)
+        const articleUrl = window.location.href;
+
+        try {
+            await navigator.clipboard.writeText(articleUrl);
+            
+            // Визуальный отклик
+            shareBtn.innerHTML = '✅ Ссылка скопирована!';
+            shareBtn.classList.add('copied');
+
+            // Через 2 секунды возвращаем исходный вид кнопки
+            setTimeout(() => {
+                shareBtn.innerHTML = '🔗 Поделиться статьёй';
+                shareBtn.classList.remove('copied');
+            }, 2000);
+        } catch (err) {
+            shareBtn.innerHTML = '❌ Ошибка копирования';
+            console.error('Не удалось скопировать ссылку:', err);
         }
     });
 }
