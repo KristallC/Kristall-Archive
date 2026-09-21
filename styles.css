@@ -363,3 +363,34 @@ html, body {
     .hero-section h1 { font-size: 32px; }
     .articles-grid-list { grid-template-columns: 1fr; }
 }
+
+/* Кнопка "Поделиться статьёй" */
+.share-article-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(121, 82, 235, 0.1);
+    border: 1px solid var(--border);
+    color: var(--accent-hover);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 20px; /* Отступ перед текстом статьи */
+    transition: all 0.2s ease;
+}
+
+.share-article-btn:hover {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+    transform: translateY(-1px);
+}
+
+/* Зеленый стиль для успешного копирования */
+.share-article-btn.copied {
+    background: #2ecc71 !important;
+    border-color: #2ecc71 !important;
+    color: #fff !important;
+}
