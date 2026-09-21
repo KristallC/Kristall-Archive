@@ -66,7 +66,7 @@ function buildGroupedSidebar() {
     }
 }
 
-// Роутер страниц с контролем мобильных кнопок
+// Роутер страниц с контролем мобильных кнопок и динамическим SEO
 async function route() {
     const hash = window.location.hash.replace('#', '');
     const homeScreen = document.getElementById('home-screen');
@@ -76,23 +76,35 @@ async function route() {
 
     document.querySelectorAll('.sidebar-links a').forEach(a => a.classList.remove('active'));
 
+    // Находим мета-теги для управления ими
+    const metaDesc = document.getElementById('meta-desc');
+    const metaKeywords = document.getElementById('meta-keywords');
+    const ogTitle = document.getElementById('og-title');
+    const ogDesc = document.getElementById('og-desc');
+
     if (!hash || hash === 'welcome') {
         homeScreen.classList.remove('hidden');
         contentScreen.classList.add('hidden');
-        menuToggleBtn.classList.add('hidden'); // Прячем кнопку меню на главном экране
+        menuToggleBtn.classList.add('hidden');
         
         homeScreen.classList.remove('fade-in');
         void homeScreen.offsetWidth; 
         homeScreen.classList.add('fade-in');
         
         document.title = "Kristall Archive";
+
+        // Возвращаем дефолтные мета-теги для главной страницы
+        if(metaDesc) metaDesc.content = "Официальная база знаний KristallArchive. Инструкции, правила, техническая документация и гайды сообщества KristallCommunity.";
+        if(metaKeywords) metaKeywords.content = "Kristall Archive, KristallCommunity, гайды Kristall, правила сообщества, Kristall API, документация";
+        if(ogTitle) ogTitle.content = "Kristall Archive — База знаний сообщества";
+        if(ogDesc) ogDesc.content = "Ищите инструкции, статьи и гайды по вселенной Kristall. Всё в одном месте с красивым дизайном!";
     } else {
         const article = articlesIndex.find(a => a.id === hash);
         
         if (article) {
             homeScreen.classList.add('hidden');
             contentScreen.classList.remove('hidden');
-            menuToggleBtn.classList.remove('hidden'); // Показываем кнопку меню внутри статьи
+            menuToggleBtn.classList.remove('hidden');
             
             articleHolder.innerHTML = '<p>Загрузка контента...</p>';
             
@@ -110,7 +122,20 @@ async function route() {
                 articleHolder.classList.add('fade-in');
     
                 highlightAndSetupCode(articleHolder);
+                
+                // МЕНЯЕМ ЗАГОЛОВОК СТРАНИЦЫ
                 document.title = `${article.title} | Kristall Archive`;
+
+                // МАГИЯ ДИНАМИЧЕСКОГО СЕО: Подставляем данные из манифеста статьи
+                if (metaDesc) metaDesc.content = article.description;
+                if (ogTitle) ogTitle.content = article.title;
+                if (ogDesc) ogDesc.content = article.description;
+                
+                // Автоматически собираем новые ключевые слова из тегов статьи
+                if (metaKeywords && article.tags) {
+                    metaKeywords.content = `Kristall Archive, ${article.tags.join(', ')}`;
+                }
+
             } catch (err) {
                 articleHolder.innerHTML = `<h2>⚠️ Ошибка</h2><p>Не удалось получить файл статьи.</p>`;
             }
