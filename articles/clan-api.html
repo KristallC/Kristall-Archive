@@ -1,0 +1,60 @@
+<div class="wiki-article">
+    <h1>📊 Вывод таблиц кланов в ваших проектах через API</h1>
+    <p class="lead-text">Вы разрабатываете собственные игры или приложения для нашего сообщества? Отличная новость! Теперь вы можете выводить актуальный рейтинг и списки кланов KristallCommunity прямо внутри своих проектов, используя наше статическое JSON-API.</p>
+
+    <!-- Блок внимания -->
+    <div class="alert-block info">
+        <div class="alert-icon">💡</div>
+        <div class="alert-content">
+            <strong>Как это работает?</strong>
+            <p>Вся статистика кланов нашего сообщества хранится в открытом JSON-файле на наших серверах GitHub. Вы можете отправлять прямые запросы к этому файлу и использовать полученные данные как вам угодно.</p>
+        </div>
+    </div>
+
+    <h2>1. Ссылка на источник данных</h2>
+    <p>Для получения актуальных данных используйте следующую прямую <code>raw</code> ссылку на наш репозиторий:</p>
+    
+    <pre><code>https://raw.githubusercontent.com/KristallC/Kristall-Community/refs/heads/main/databases/clans.json</code></pre>
+
+    <h2>2. Структура получаемого JSON-файла</h2>
+    <p>При запросе сервер вернет вам массив объектов. Каждая карточка клана содержит следующие поля, которые легко прочитать из кода:</p>
+    
+    <ul>
+        <li><code>id</code> — уникальный текстовый идентификатор клана.</li>
+        <li><code>name</code> — официальное название, отображаемое на сайте.</li>
+        <li><code>tag</code> — официальный тег клана.</li>
+        <li><code>tag_color</code> — HEX-код цвета для тега клана.</li>
+        <li><code>members_current</code> — количество участников клана.</li>
+        <li><code>points</code> — количество очков рейтинга клана.</li>
+        <li><code>trend</code> — тенденция в таблице лидеров.</li>
+    </ul>
+
+    <h2>3. Пример реализации на JavaScript</h2>
+    <p>Вы можете использовать стандартный метод <code>fetch()</code> для вывода данных в консоль вашего веб-приложения или скрипта:</p>
+
+    <pre><code>const url = 'https://raw.githubusercontent.com/KristallC/Kristall-Community/refs/heads/main/databases/clans.json';
+
+fetch(url)
+  .then(response => response.json())
+  .then(clans => {
+    // Сортируем кланы по очкам (от большего к меньшему)
+    clans.sort((a, b) => b.score - a.score);
+    
+    console.log("Топ кланов Kristall:");
+    clans.forEach((clan, index) => {
+        console.log(`${index + 1}. [${clan.name}] — Очки: ${clan.score}`);
+    });
+  })
+  .catch(err => console.error("Ошибка загрузки данных:", err));</code></pre>
+
+    <!-- Предупреждение -->
+    <div class="alert-block warning">
+        <div class="alert-icon">⚠️</div>
+        <div class="alert-content">
+            <strong>Обновление данных</strong>
+            <p>Поскольку файлы обновляются администрацией вручную, задержка синхронизации данных между событиями и JSON-файлом может составлять от нескольких минут до часа.</p>
+        </div>
+    </div>
+
+    <p>Если у вас возникли трудности с парсингом данных, свяжитесь с нами через нашу <a href="https://kristallc.github.io/Kristall-Community/" target="_blank" class="wiki-link">главную платформу</a>.</p>
+</div>
