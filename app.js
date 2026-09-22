@@ -25,7 +25,6 @@ async function initArchive() {
                 console.error('Ошибка PWA:', err);
             });
         }
-
     } catch (error) {
         console.error('Ошибка инициализации архива:', error);
     }
@@ -55,9 +54,7 @@ function buildGroupedSidebar() {
                 link.textContent = article.title;
                 link.title = article.title;
                 
-                // При клике на ссылку на мобилке — закрываем шторку
                 link.addEventListener('click', closeMobileMenu);
-                
                 groupDiv.appendChild(link);
             });
 
@@ -66,7 +63,7 @@ function buildGroupedSidebar() {
     }
 }
 
-// Роутер страниц с контролем мобильных кнопок и динамическим SEO
+// Роутер страниц с контролем мобильной кнопки меню
 async function route() {
     const hash = window.location.hash.replace('#', '');
     const homeScreen = document.getElementById('home-screen');
@@ -76,7 +73,6 @@ async function route() {
 
     document.querySelectorAll('.sidebar-links a').forEach(a => a.classList.remove('active'));
 
-    // Находим мета-теги для управления ими
     const metaDesc = document.getElementById('meta-desc');
     const metaKeywords = document.getElementById('meta-keywords');
     const ogTitle = document.getElementById('og-title');
@@ -85,7 +81,7 @@ async function route() {
     if (!hash || hash === 'welcome') {
         homeScreen.classList.remove('hidden');
         contentScreen.classList.add('hidden');
-        menuToggleBtn.classList.add('hidden');
+        if (menuToggleBtn) menuToggleBtn.classList.add('hidden');
         
         homeScreen.classList.remove('fade-in');
         void homeScreen.offsetWidth; 
@@ -93,7 +89,6 @@ async function route() {
         
         document.title = "Kristall Archive";
 
-        // Возвращаем дефолтные мета-теги для главной страницы
         if(metaDesc) metaDesc.content = "Официальная база знаний KristallArchive. Инструкции, правила, техническая документация и гайды сообщества KristallCommunity.";
         if(metaKeywords) metaKeywords.content = "Kristall Archive, KristallCommunity, гайды Kristall, правила сообщества, Kristall API, документация";
         if(ogTitle) ogTitle.content = "Kristall Archive — База знаний сообщества";
@@ -104,7 +99,7 @@ async function route() {
         if (article) {
             homeScreen.classList.add('hidden');
             contentScreen.classList.remove('hidden');
-            menuToggleBtn.classList.remove('hidden');
+            if (menuToggleBtn) menuToggleBtn.classList.remove('hidden');
             
             articleHolder.innerHTML = '<p>Загрузка контента...</p>';
             
@@ -122,18 +117,14 @@ async function route() {
                 articleHolder.classList.add('fade-in');
     
                 highlightAndSetupCode(articleHolder);
-
                 setupShareButton(articleHolder);
                 
-                // МЕНЯЕМ ЗАГОЛОВОК СТРАНИЦЫ
                 document.title = `${article.title} | Kristall Archive`;
 
-                // МАГИЯ ДИНАМИЧЕСКОГО СЕО: Подставляем данные из манифеста статьи
                 if (metaDesc) metaDesc.content = article.description;
                 if (ogTitle) ogTitle.content = article.title;
                 if (ogDesc) ogDesc.content = article.description;
                 
-                // Автоматически собираем новые ключевые слова из тегов статьи
                 if (metaKeywords && article.tags) {
                     metaKeywords.content = `Kristall Archive, ${article.tags.join(', ')}`;
                 }
@@ -144,7 +135,7 @@ async function route() {
         } else {
             homeScreen.classList.add('hidden');
             contentScreen.classList.remove('hidden');
-            menuToggleBtn.classList.add('hidden');
+            if (menuToggleBtn) menuToggleBtn.classList.add('hidden');
             articleHolder.innerHTML = `<h2>404</h2><p>Такой статьи не существует.</p>`;
         }
     }
@@ -157,15 +148,15 @@ function setupMobileMenu() {
     const sidebarClose = document.getElementById('sidebar-close');
     const overlay = document.getElementById('sidebar-overlay');
 
-    // Открыть меню
-    menuToggle.addEventListener('click', () => {
-        sidebar.classList.add('open');
-        overlay.classList.remove('hidden');
-    });
+    if (menuToggle && sidebar && sidebarClose && overlay) {
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.add('open');
+            overlay.classList.remove('hidden');
+        });
 
-    // Закрыть меню по крестику или клику на темный фон
-    sidebarClose.addEventListener('click', closeMobileMenu);
-    overlay.addEventListener('click', closeMobileMenu);
+        sidebarClose.addEventListener('click', closeMobileMenu);
+        overlay.addEventListener('click', closeMobileMenu);
+    }
 }
 
 function closeMobileMenu() {
@@ -175,6 +166,33 @@ function closeMobileMenu() {
         sidebar.classList.remove('open');
         overlay.classList.add('hidden');
     }
+}
+
+// Логика работы тем
+function initTheme() {
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    if (!themeToggleBtn) return;
+
+    const savedTheme = localStorage.getItem('kristall-theme');
+
+    if (savedTheme === 'light') {
+        document.body.classList.add('light-theme');
+        themeToggleBtn.textContent = '☀️';
+    } else {
+        themeToggleBtn.textContent = '🌙';
+    }
+
+    themeToggleBtn.addEventListener('click', () => {
+        document.body.classList.toggle('light-theme');
+
+        if (document.body.classList.contains('light-theme')) {
+            themeToggleBtn.textContent = '☀️';
+            localStorage.setItem('kristall-theme', 'light');
+        } else {
+            themeToggleBtn.textContent = '🌙';
+            localStorage.setItem('kristall-theme', 'dark');
+        }
+    });
 }
 
 // Логика разделов Реддита
@@ -266,7 +284,7 @@ function setupSearch() {
 
     document.getElementById('back-to-home').addEventListener('click', () => {
         window.location.hash = 'welcome';
-        closeMobileMenu(); // Закрываем меню, если ушли на главную
+        closeMobileMenu();
     });
 }
 
@@ -310,72 +328,31 @@ function highlightAndSetupCode(container) {
     });
 }
 
-// Логика переключения темной и светлой темы
-function initTheme() {
-    const themeToggleBtn = document.getElementById('theme-toggle');
-    if (!themeToggleBtn) return;
-
-    // 1. Проверяем, какая тема была сохранена ранее
-    const savedTheme = localStorage.getItem('kristall-theme');
-
-    // Если сохранена светлая тема — включаем её сразу
-    if (savedTheme === 'light') {
-        document.body.classList.add('light-theme');
-        themeToggleBtn.textContent = '☀️'; // Меняем иконку на Солнце
-    } else {
-        themeToggleBtn.textContent = '🌙'; // Иначе оставляем Луну (темная тема по умолчанию)
-    }
-
-    // 2. Слушаем клик по кнопке переключения
-    themeToggleBtn.addEventListener('click', () => {
-        // Переключаем класс на теге body
-        document.body.classList.toggle('light-theme');
-
-        // Проверяем, включилась ли в итоге светлая тема
-        if (document.body.classList.contains('light-theme')) {
-            themeToggleBtn.textContent = '☀️';
-            localStorage.setItem('kristall-theme', 'light'); // Запоминаем выбор
-        } else {
-            themeToggleBtn.textContent = '🌙';
-            localStorage.setItem('kristall-theme', 'dark');  // Запоминаем выбор
-        }
-    });
-}
-
-// Функция автоматического создания кнопки "Поделиться"
+// Автоматическое создание кнопки "Поделиться"
 function setupShareButton(container) {
-    // Находим первый заголовок h1 в статье (это название статьи)
     const mainTitle = container.querySelector('h1');
     if (!mainTitle) return;
+    if (container.querySelector('.share-article-btn')) return; 
 
-    // Создаем элемент кнопки
     const shareBtn = document.createElement('button');
     shareBtn.className = 'share-article-btn';
     shareBtn.innerHTML = '🔗 Поделиться статьёй';
 
-    // Вставляем кнопку сразу ПОСЛЕ главного заголовка h1
     mainTitle.parentNode.insertBefore(shareBtn, mainTitle.nextSibling);
 
-    // Логика копирования ссылки при клике
     shareBtn.addEventListener('click', async () => {
-        // Формируем чистую ссылку: текущий адрес сайта + хэш статьи (например, ://mysite.com)
         const articleUrl = window.location.href;
-
         try {
             await navigator.clipboard.writeText(articleUrl);
-            
-            // Визуальный отклик
             shareBtn.innerHTML = '✅ Ссылка скопирована!';
             shareBtn.classList.add('copied');
 
-            // Через 2 секунды возвращаем исходный вид кнопки
             setTimeout(() => {
                 shareBtn.innerHTML = '🔗 Поделиться статьёй';
                 shareBtn.classList.remove('copied');
             }, 2000);
         } catch (err) {
-            shareBtn.innerHTML = '❌ Ошибка копирования';
-            console.error('Не удалось скопировать ссылку:', err);
+            shareBtn.innerHTML = '❌ Ошибка';
         }
     });
 }
