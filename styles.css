@@ -339,3 +339,47 @@ html, body {
     .hero-section h1 { font-size: 28px; }
     .articles-grid-list { grid-template-columns: 1fr; }
 }
+
+/* ==========================================================================
+   9. СТИЛИЗАЦИЯ МЕДИА-КОНТЕНТА (ИЗОБРАЖЕНИЯ И ВИДЕО)
+   ========================================================================== */
+
+/* Красивые, адаптивные картинки без обрезки краев */
+.wiki-article img {
+    max-width: 100%;       /* Картинка никогда не вылезет за границы статьи */
+    height: auto;          /* Сохраняет оригинальные пропорции, не сжимаясь */
+    display: block;
+    margin: 24px auto;     /* Центрируем картинку и делаем отступы сверху/снизу */
+    border-radius: 8px;    /* Сглаживаем углы */
+    border: 1px solid var(--border); /* Аккуратная тонкая рамка */
+    box-shadow: 0 4px 20px rgba(121, 82, 235, 0.15); /* Фирменное легкое кристальное свечение */
+}
+
+/* Светлая тема — делаем свечение у картинок чуть мягче */
+body.light-theme .wiki-article img {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+/* Адаптивный контейнер для видео-плеера (YouTube, RuTube, VK или свои файлы) */
+.video-wrapper {
+    position: relative;
+    padding-bottom: 56.25%; /* Идеальное соотношение сторон 16:9 */
+    height: 0;
+    overflow: hidden;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    margin: 24px 0;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Стилизация самого плеера (будь то <video> или <iframe> из ютуба) */
+.video-wrapper iframe,
+.video-wrapper video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: #000; /* Черный фон, пока видео загружается */
+}
