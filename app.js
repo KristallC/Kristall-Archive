@@ -140,6 +140,8 @@ async function route() {
             articleHolder.innerHTML = `<h2>404</h2><p>Такой статьи не существует.</p>`;
         }
     }
+
+    closeMobileMenu();
 }
 
 // Управление шторкой мобильного меню
