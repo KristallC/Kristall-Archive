@@ -5,7 +5,9 @@
     "description": "Свод правил поведения, регламент наказаний для модераторов и принципы безопасности аккаунтов.",
     "category": "info",
     "tags": ["правила", "важно", "модерация", "faq", "законы"],
-    "file": "articles/rules.html"
+    "file": "articles/rules.html",
+    "date": "21.09.2026",
+    "authorId": "dev_kristall"
   },
   {
     "id": "faq",
@@ -13,7 +15,9 @@
     "description": "Быстрые ответы на популярные вопросы.",
     "category": "info",
     "tags": ["faq", "помощь", "вопросы", "новичкам"],
-    "file": "articles/faq.html"
+    "file": "articles/faq.html",
+    "date": "22.09.2026",
+    "authorId": "dev_kristall"
   },
   {
     "id": "clan-api",
@@ -21,6 +25,8 @@
     "description": "Пошаговое руководство для создателей контента: как использовать raw ссылки на наш JSON файл для вывода рейтингов в сторонних проектах.",
     "category": "dev",
     "tags": ["api", "json", "разработчикам", "кланы", "код", "база данных"],
-    "file": "articles/clan-api.html"
+    "file": "articles/clan-api.html",
+    "date": "22.09.2026",
+    "authorId": "dev_kristall"
   }
 ]
