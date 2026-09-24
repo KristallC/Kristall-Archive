@@ -1,4 +1,5 @@
 let articlesIndex = [];
+let usersDatabase = [];
 
 const categoryNames = {
     info: "📌 База знаний и FAQ",
@@ -12,8 +13,14 @@ async function initArchive() {
         const response = await fetch('articles-list.json');
         articlesIndex = await response.json();
 
+        try {
+            const usersResponse = await fetch('https://raw.githubusercontent.com/KristallC/Kristall-Community/refs/heads/main/databases/users.json');
+            usersDatabase = await usersResponse.json();
+        } catch(e) {
+            console.warn('Не удалось загрузить базу пользователей с главного сайта:', e);
+        }
+
         buildGroupedSidebar();
-        
         window.addEventListener('hashchange', route);
         route();
         setupSearch();
@@ -119,6 +126,7 @@ async function route() {
     
                 highlightAndSetupCode(articleHolder);
                 setupShareButton(articleHolder);
+                setupArticleMeta(articleHolder, article);
                 
                 document.title = `${article.title} | Kristall Archive`;
 
@@ -358,6 +366,28 @@ function setupShareButton(container) {
             shareBtn.innerHTML = '❌ Ошибка';
         }
     });
+}
+
+// Функция генерации мета-данных статьи (Автор и Дата)
+function setupArticleMeta(container, article) {
+    const mainTitle = container.querySelector('h1');
+    if (!mainTitle) return;
+    if (container.querySelector('.article-meta')) return; // Защита от дублирования
+
+    // Ищем автора в базе по ID
+    const authorObject = usersDatabase.find(u => u.id === article.authorId);
+    const authorName = authorObject ? authorObject.username : "Неизвестный автор";
+
+    // Создаем блок мета-данных
+    const metaDiv = document.createElement('div');
+    metaDiv.className = 'article-meta';
+    metaDiv.innerHTML = `
+        <span class="meta-item">📝 Автор: <span class="meta-author">${authorName}</span></span>
+        <span class="meta-item">📅 Обновлено: ${article.date || "Не указано"}</span>
+    `;
+
+    // Вставляем плашку ровно под заголовок h1
+    mainTitle.parentNode.insertBefore(metaDiv, mainTitle.nextSibling);
 }
 
 initArchive();
