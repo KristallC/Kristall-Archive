@@ -11,12 +11,13 @@ async function initArchive() {
     try {
         const response = await fetch('articles-list.json');
         articlesIndex = await response.json();
+
+        buildGroupedSidebar();
         
         window.addEventListener('hashchange', route);
         route();
         setupSearch();
         setupCategories();
-        buildGroupedSidebar();
         setupMobileMenu();
         initTheme();
         
