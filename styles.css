@@ -383,3 +383,25 @@ body.light-theme .wiki-article img {
     border: none;
     background: #000; /* Черный фон, пока видео загружается */
 }
+
+/* Мета-данные статьи (Автор и Дата) */
+.article-meta {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    color: var(--text-muted);
+    font-size: 13px;
+    margin-top: -8px;    /* Прижимаем чуть ближе к заголовку */
+    margin-bottom: 20px; /* Отступ перед кнопкой "Поделиться" */
+}
+
+.meta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.meta-author {
+    color: var(--accent-hover);
+    font-weight: 600;
+}
