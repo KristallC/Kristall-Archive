@@ -127,6 +127,7 @@ async function route() {
                 highlightAndSetupCode(articleHolder);
                 setupShareButton(articleHolder);
                 setupArticleMeta(articleHolder, article);
+                setupImageShimmer(articleHolder);
                 
                 document.title = `${article.title} | Kristall Archive`;
 
@@ -375,6 +376,7 @@ function setupArticleMeta(container, article) {
     if (container.querySelector('.article-meta')) return; // Защита от дублирования
 
     // Ищем автора в базе по ID
+    // Предполагаем, что в твоем users.json у каждого юзера есть поля "id" и "username"
     const authorObject = usersDatabase.find(u => u.id === article.authorId);
     const authorName = authorObject ? authorObject.username : "Неизвестный автор";
 
@@ -388,6 +390,44 @@ function setupArticleMeta(container, article) {
 
     // Вставляем плашку ровно под заголовок h1
     mainTitle.parentNode.insertBefore(metaDiv, mainTitle.nextSibling);
+}
+
+// Функция автоматического создания эффекта шиммера для картинок
+function setupImageShimmmer(container) {
+    const images = container.querySelectorAll('img');
+
+    images.forEach(img => {
+        // Защита: если картинка уже обработана или обернута, пропускаем
+        if (img.classList.contains('shimmer-img')) return;
+
+        // Проверяем, скачалась ли картинка из кэша мгновенно до запуска скрипта
+        if (img.complete) {
+            return; // Если картинка уже в памяти браузера, шиммер не нужен
+        }
+
+        // 1. Добавляем картинке специальный класс для скрытия
+        img.classList.add('shimmer-img');
+
+        // 2. Создаем элемент обертки с анимацией шиммера
+        const wrapper = document.createElement('div');
+        wrapper.className = 'image-shimmer-wrapper loading';
+
+        // 3. Вставляем обертку в HTML-дерево перед картинкой и перемещаем картинку внутрь неё
+        img.parentNode.insertBefore(wrapper, img);
+        wrapper.appendChild(img);
+
+        // 4. Слушаем событие завершения загрузки изображения браузером
+        img.addEventListener('load', () => {
+            img.classList.add('loaded'); // Плавно проявляем картинку
+            wrapper.classList.remove('loading'); // Выключаем анимацию градиента
+        });
+
+        // На случай, если ссылка битая или произошла ошибка загрузки
+        img.addEventListener('error', () => {
+            wrapper.classList.remove('loading');
+            wrapper.style.border = '1px dashed #e74c3c'; // Помечаем красным пунктиром
+        });
+    });
 }
 
 initArchive();
