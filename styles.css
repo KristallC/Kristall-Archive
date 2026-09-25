@@ -405,3 +405,70 @@ body.light-theme .wiki-article img {
     color: var(--accent-hover);
     font-weight: 600;
 }
+
+/* ==========================================================================
+   10. СТИЛИ ЭФФЕКТА ШИММЕРА (АНИМАЦИЯ ЗАГРУЗКИ КАРТИНОК)
+   ========================================================================== */
+
+/* Контейнер-скелет, который будет переливаться, пока картинка грузится */
+.image-shimmer-wrapper {
+    position: relative;
+    width: fit-content;
+    max-width: 100%;
+    margin: 24px auto;     /* Центрируем картинку так же, как было раньше */
+    border-radius: 8px;
+    overflow: hidden;
+    background: #14182e;   /* Базовый цвет фона до загрузки */
+}
+
+/* Переключаем базовый цвет фона для светлой темы */
+body.light-theme .image-shimmer-wrapper {
+    background: #eef1f6;
+}
+
+/* Сам эффект переливающегося градиента */
+.image-shimmer-wrapper.loading::after {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    /* Создаем диагональную полосу света */
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.05) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    /* Настраиваем размер градиента так, чтобы его можно было бесконечно двигать */
+    background-size: 200% 100%;
+    animation: shimmerMove 1.5s infinite linear;
+    z-index: 2;
+}
+
+/* Настройка градиента для светлой темы, чтобы полоса была заметна */
+body.light-theme .image-shimmer-wrapper.loading::after {
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.6) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    background-size: 200% 100%;
+}
+
+/* Бесконечная анимация движения слева направо */
+@keyframes shimmerMove {
+    0% { background-position: -120% 0; }
+    100% { background-position: 120% 0; }
+}
+
+/* Скрываем изображение, пока оно грузится, и плавно проявляем после */
+.wiki-article img.shimmer-img {
+    opacity: 0;
+    margin: 0 !important; /* Обнуляем старые отступы, так как за них теперь отвечает обертка */
+    transition: opacity 0.4s ease-in-out;
+}
+
+/* Класс, который JS добавит, когда картинка полностью скачается */
+.wiki-article img.shimmer-img.loaded {
+    opacity: 1;
+}
