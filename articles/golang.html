@@ -1,0 +1,260 @@
+<div class="wiki-article">
+    <h1>Ультимативный справочник по Go (Golang): От основ до бэкенда</h1>
+    <p class="lead-text">Go — это компилируемый язык программирования со строгой статической типизацией, созданный инженерами Google. Он разработан специально для создания высоконагруженных сетевых сервисов, бэкенда и распределённых систем. Этот подробный гайд содержит весь базовый синтаксис, разбор архитектуры памяти и примеры создания реального API.</p>
+
+    <div class="alert-block info">
+        <div class="alert-icon">💡</div>
+        <div class="alert-content">
+            <strong>Особенности компиляции в Go</strong>
+            <p>Код Go компилируется напрямую в машинные инструкции целевой операционной системы. На выходе вы получаете один независимый исполняемый файл без необходимости устанавливать на сервер интерпретаторы, библиотеки или тяжелые виртуальные машины.</p>
+        </div>
+    </div>
+
+    <h2>1. Архитектура работы Go: Как код становится программой</h2>
+    <p>В отличие от скриптовых языков (Python, JavaScript), которые переводятся в машинный код прямо во время запуска, Go делает всю тяжелую работу заранее. Специальный инструмент — компилятор — берет ваш текст программы и собирает из него готовый бинарник.</p>
+
+    <!-- Схема компиляции -->
+    <div class="code-wrapper" style="padding: 20px; background: #0e111f; color: #8a92b2; font-family: monospace; font-size: 13px; line-height: 1.4; border-radius: 8px;">
+        <div>[ Твой код: main.go ]</div>
+        <div style="padding-left: 40px; color: var(--accent-hover);">↓ Команда: go build main.go</div>
+        <div>[ Компилятор Go (Проверка синтаксиса и оптимизация) ]</div>
+        <div style="padding-left: 40px; color: var(--accent-hover);">↓ Генерация машинного кода</div>
+        <div style="color: #fff; font-weight: bold;">[ Готовый файл: main.exe (Windows) или main (Linux/Mac) ]</div>
+    </div>
+
+    <!-- Изображение №1 -->
+    <img src="https://github.com/KristallC/Images/blob/main/Schemes/go_compilation_schema.png?raw=true" alt="Схема компиляции и сборки проекта на Go">
+
+    <h2>2. Анатомия программы (Hello, World!)</h2>
+    <p>Любой исполняемый файл в Go должен принадлежать пакету <code>main</code> и содержать одноименную функцию <code>main()</code>, которая является официальной точкой входа в приложение.</p>
+    
+    <pre><code>package main
+
+import "fmt" // Импортируем стандартный пакет для ввода-вывода текста
+
+func main() {
+    fmt.Println("Привет от Kristall Archive!")
+}</code></pre>
+
+    <h2>3. Переменные, Константы и Типизация</h2>
+    <p>В Go строгая статическая типизация: тип переменной определяется при её создании и не может меняться. Язык поддерживает явное объявление и сокращённое (с автоопределением типа).</p>
+
+    <pre><code>package main
+
+import "fmt"
+
+const Pi = 3.14159 // Константы объявляются через ключевое слово const
+
+func main() {
+    // 1. Явное объявление с ключевым словом var
+    var message string = "Бэкенд на Go"
+    var version int = 1
+    
+    // 2. Сокращённое объявление с помощью оператора := (работает только внутри функций)
+    isRelease := true // Автоматически определится как bool
+    rating := 98.5    // Автоматически определится как float64
+
+    fmt.Println(message, version, isRelease, rating)
+}</code></pre>
+
+    <div class="wiki-table-container">
+        <table class="wiki-table">
+            <thead>
+                <tr>
+                    <th>Группа типов</th>
+                    <th>Типы данных в Go</th>
+                    <th>Описание</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Строки</td>
+                    <td><code>string</code></td>
+                    <td>Текст в двойных кавычках, поддерживает UTF-8 из коробки.</td>
+                </tr>
+                <tr>
+                    <td>Целые числа</td>
+                    <td><code>int, int8, int32, int64, uint</code></td>
+                    <td>Числа без дробной части. Разные размеры важны для точечной оптимизации памяти.</td>
+                </tr>
+                <tr>
+                    <td>Дробные числа</td>
+                    <td><code>float32, float64</code></td>
+                    <td>Числа с плавающей точкой (стандарт для бэкенда — float64).</td>
+                </tr>
+                <tr>
+                    <td>Логический</td>
+                    <td><code>bool</code></td>
+                    <td>Принимает исключительно значения <code>true</code> или <code>false</code>.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="alert-block warning">
+        <div class="alert-icon">⚠️</div>
+        <div class="alert-content">
+            <strong>Жёсткие правила компилятора</strong>
+            <p>Если вы импортировали пакет или создали переменную, но ни разу не использовали её в коде, Go выдаст ошибку компиляции. Язык принудительно заставляет вас писать чистый код без мусора.</p>
+        </div>
+    </div>
+
+    <h2>4. Управляющие конструкции (Условия и Циклы)</h2>
+    <p>В Go условия пишутся без круглых скобок вокруг проверяемого выражения. Важная особенность синтаксиса условий: открывающая фигурная скобка <code>{</code> обязана находиться на той же строчке, что и оператор условия.</p>
+
+    <pre><code>package main
+
+import "fmt"
+
+func main() {
+    score := 75
+
+    // Классическое условие
+    if score >= 90 {
+        fmt.Println("Отличный результат!")
+    } else if score >= 60 {
+        fmt.Println("Хороший результат.")
+    } else {
+        fmt.Println("Нужно подтянуть знания.")
+    }
+}</code></pre>
+
+    <h3>Единственный цикл: <code>for</code></h3>
+    <p>В языке Go из соображений минимализма нет циклов <code>while</code> или <code>do-while</code>. Все виды итераций реализуются с помощью одного универсального цикла <code>for</code>.</p>
+
+    <pre><code>package main
+
+import "fmt"
+
+func main() {
+    // 1. Стандартный цикл со счетчиком
+    for i := 0; i < 3; i++ {
+        fmt.Println("Итерация:", i)
+    }
+
+    // 2. Аналог цикла while (только с условием выхода)
+    counter := 0
+    for counter < 3 {
+        fmt.Println("Счетчик:", counter)
+        counter++
+    }
+
+    // 3. Бесконечный цикл (выход через break)
+    for {
+        fmt.Println("Работаем...")
+        break // Немедленный выход из цикла
+    }
+}</code></pre>
+
+    <h2>5. Функции и возврат множества значений</h2>
+    <p>Функции в Go могут принимать параметры, возвращать именованные результаты, а главное — они умеют возвращать <strong>несколько значений одновременно</strong>. Это стандартный для Go способ обработки ошибок бэкенда.</p>
+
+    <pre><code>package main
+
+import (
+    "errors"
+    "fmt"
+)
+
+// Функция принимает два int и возвращает результат деления и ошибку
+func divide(a, b int) (int, error) {
+    if b == 0 {
+        // Возвращаем дефолтный 0 и созданную ошибку
+        return 0, errors.New("на ноль делить нельзя")
+    }
+    // Если всё хорошо, возвращаем результат и пустую ошибку (nil)
+    return a / b, nil
+}
+
+func main() {
+    result, err := divide(10, 0)
+    
+    if err != nil {
+        fmt.Println("⚠️ Произошла ошибка:", err)
+        return
+    }
+    
+    fmt.Println("Результат деления:", result)
+}</code></pre>
+
+    <h2>6. Структуры данных (Массивы, Слайсы, Мапы)</h2>
+    <p>В реальной бэкенд-разработке массивы фиксированной длины используются редко. Вместо них применяются динамические массивы — <strong>Слайсы (Slices)</strong>, и ассоциативные массивы — <strong>Мапы (Maps)</strong>.</p>
+
+    <pre><code>package main
+
+import "fmt"
+
+func main() {
+    // --- СЛАЙСЫ (Динамические массивы) ---
+    clans := []string{"Alpha", "Beta"}
+    clans = append(clans, "Kristall") // Добавляем элемент динамически
+    
+    for index, clanName := range clans {
+        fmt.Printf("Клан %d: %s\n", index+1, clanName)
+    }
+
+    // --- МАПЫ (Словари / Хэш-таблицы) ---
+    playerScores := make(map[string]int)
+    playerScores["Vlad"] = 5000
+    playerScores["Denis"] = 3400
+    
+    fmt.Println("Очки Влада:", playerScores["Vlad"])
+}</code></pre>
+
+    <h2>7. Понятие об Указателях (Pointers) и работе с памятью</h2>
+    <p>Go позволяет управлять памятью напрямую с помощью указателей. Когда вы передаете переменную в функцию обычным способом, Go делает её <strong>полную копию в памяти</strong>. Изменения внутри функции не меняют исходную переменную. Указатель же хранит адрес ячейки памяти, позволяя менять оригинал напрямую и экономить ресурсы сервера.</p>
+
+    <!-- Схема работы указателей в памяти -->
+    <div class="code-wrapper" style="padding: 20px; background: #0e111f; color: #8a92b2; font-family: monospace; font-size: 13px; line-height: 1.5; border-radius: 8px;">
+        <div>[ Переменная: currentScore ] ── лежит в ячейке памяти ──> [ Адрес: 0xc0000a20b0 ] (Значение: 100)</div>
+        <div style="color: var(--accent-hover);">[ Указатель: scorePointer ]   ── хранит этот адрес ──> [ Значение указателя: 0xc0000a20b0 ]</div>
+        <div>*scorePointer = 9999      ── меняет значение прямо по адресу ──> [ Адрес: 0xc0000a20b0 ] (Значение: 9999)</div>
+    </div>
+
+    <!-- Изображение №2 -->
+    <img src="https://github.com/KristallC/Images/blob/main/Schemes/go_pointers_memory_visualization.png?raw=true" alt="Визуализация указателей и ссылок на ячейки памяти в Golang">
+
+    <pre><code>package main
+
+import "fmt"
+
+// Функция принимает УКАЗАТЕЛЬ на int (*int) и меняет значение в исходной ячейке памяти
+func updateScore(scorePointer *int) {
+    *scorePointer = 9999 // Знаком * разыменовываем указатель и перезаписываем память
+}
+
+func main() {
+    currentScore := 100
+    
+    // Передаем адрес переменной currentScore с помощью знака &
+    updateScore(&currentScore)
+    
+    // Значение переменной изменилось во всей программе!
+    fmt.Println("Обновленный счет:", currentScore) // Выведет: 9999
+}</code></pre>
+
+    <h2>8. Создание HTTP-сервера для API</h2>
+    <p>Напишем базовый микросервер, который готов отдавать данные в формате JSON для интеграции с вашими приложениями или играми.</p>
+
+    <pre><code>package main
+
+import (
+    "fmt"
+    "net/http"
+)
+
+func apiHandler(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "application/json")
+    // Отправляем JSON-строку обратно клиенту
+    fmt.Fprint(w, {"status": "success", "message": "Бэкенд работает отлично!"})
+}
+
+func main() {
+    http.HandleFunc("/api/status", apiHandler)
+
+    fmt.Println("Сервер бэкенда запущен на http://localhost:8080...")
+    http.ListenAndServe(":8080", nil)
+}</code></pre>
+
+    <p>Чтобы продолжить глубокое изучение и скачать компилятор Go на свой компьютер, перейдите на <a href="https://go.dev" target="_blank" class="wiki-link">официальный сайт языка Go</a>.</p>
+</div>
