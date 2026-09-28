@@ -28,5 +28,15 @@
     "file": "articles/clan-api.html",
     "date": "22.09.2026",
     "authorId": "dev_kristall"
+  },
+  {
+    "id": "golang",
+    "title": "Справочник по Go (Golang): От основ до бэкенда",
+    "description": "Полноценный учебник по языку Go от Google для начинающих бэкендеров: схемы компиляции, переменные, условия, циклы, структуры данных, указатели и сборка веб-сервера.",
+    "category": "dev",
+    "tags": ["golang", "backend", "разработчикам", "бэкенд", "код", "server", "сервер", "обучение", "study", "programming", "программирование", "руководство"],
+    "file": "articles/golang.html",
+    "date": "28.09.2026",
+    "authorId": "dev_kristall"
   }
 ]
