@@ -393,7 +393,7 @@ function setupArticleMeta(container, article) {
 }
 
 // Функция автоматического создания эффекта шиммера для картинок
-function setupImageShimmmer(container) {
+function setupImageShimmer(container) {
     const images = container.querySelectorAll('img');
 
     images.forEach(img => {
